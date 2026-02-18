@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Coding Club AI</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #eef2ff;
+  text-align: center;
+}
+.container {
+  background: white;
+  width: 350px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 10px;
+}
+input, button, textarea {
+  width: 90%;
+  padding: 10px;
+  margin: 5px;
+}
+button {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.hidden {
+  display: none;
+}
+h2 {
+  color: #4f46e5;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="login">
+  <h2>Login</h2>
+  <input id="lroll" placeholder="Roll Number">
+  <input id="lpass" type="password" placeholder="Password">
+  <button onclick="loginUser()">Login</button>
+  <p onclick="showRegisterPage()" style="cursor:pointer;color:blue;">
+    New User? Register
+  </p>
+</div>
+
+<!-- REGISTER -->
+<div class="container hidden" id="registerPage">
+  <h2>Register</h2>
+  <input id="rroll" placeholder="Roll Number">
+  <input id="rname" placeholder="Name">
+  <input id="rpass" type="password" placeholder="Password">
+  <button onclick="registerUser()">Register</button>
+  <p onclick="showLoginPage()" style="cursor:pointer;color:blue;">
+    Back to Login
+  </p>
+</div>
+
+<!-- HOME -->
+<div class="container hidden" id="home">
+  <h2>Welcome <span id="uname"></span></h2>
+  <button onclick="showCoding()">💻 Coding</button>
+  <button onclick="showQuiz()">🧠 Quiz</button>
+  <button onclick="showAI()">🤖 AI Learning</button>
+  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
+  <button onclick="logout()">🚪 Logout</button>
+</div>
+
+<!-- CODING -->
+<div class="container hidden" id="coding">
+  <h2>💻 Coding</h2>
+  <p>Problem: Print Hello World</p>
+  <textarea rows="4">// write your code here</textarea>
+  <button onclick="addPoints()">Submit</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- QUIZ -->
+<div class="container hidden" id="quiz">
+  <h2>🧠 Quiz</h2>
+  <p>What does AI stand for?</p>
+  <button onclick="correct()">Artificial Intelligence</button>
+  <button>Automatic Input</button>
+  <button>Advanced Internet</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- AI LEARNING -->
+<div class="container hidden" id="ai">
+  <h2>🤖 AI Learning</h2>
+  <p>AI enables machines to think like humans.</p>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="container hidden" id="leaderboard">
+  <h2>🏆 Leaderboard</h2>
+  <div id="board"></div>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<script>
+let currentUser = "";
+
+function showRegisterPage() {
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("registerPage").classList.remove("hidden");
+}
+
+function showLoginPage() {
+  document.getElementById("registerPage").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+}
+
+function registerUser() {
+  let roll = document.getElementById("rroll").value;
+  let name = document.getElementById("rname").value;
+  let pass = document.getElementById("rpass").value;
+
+  if (roll === "" || name === "" || pass === "") {
+    alert("Please fill all fields");
+    return;
+  }
+
+  let user = {
+    roll: roll,
+    name: name,
+    pass: pass,
+    points: 0
+  };
+
+  localStorage.setItem(roll, JSON.stringify(user));
+  alert("Registered Successfully");
+  showLoginPage();
+}
+
+function loginUser() {
+  let roll = document.getElementById("lroll").value;
+  let pass = document.getElementById("lpass").value;
+
+  let u = JSON.parse(localStorage.getItem(roll));
+
+  if (u && u.pass === pass) {
+    currentUser = u.roll;
+    document.getElementById("uname").innerText = u.name;
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("home").classList.remove("hidden");
+  } else {
+    alert("Invalid Login");
+  }
+}
+
+function logout() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+}
+
+function showCoding() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("coding").classList.remove("hidden");
+}
+
+function showQuiz() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+}
+
+function showAI() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("ai").classList.remove("hidden");
+}
+
+function showLeaderboard() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("leaderboard").classList.remove("hidden");
+  loadBoard();
+}
+
+function backHome() {
+  document.querySelectorAll(".container").forEach(c => c.classList.add("hidden"));
+  document.getElementById("home").classList.remove("hidden");
+}
+
+function addPoints() {
+  let u = JSON.parse(localStorage.getItem(currentUser));
+  u.points += 10;
+  localStorage.setItem(currentUser, JSON.stringify(u));
+  alert("+10 Points Added");
+}
+
+function correct() {
+  addPoints();
+  alert("Correct Answer!");
+}
+
+function loadBoard() {
+  let board = document.getElementById("board");
+  board.innerHTML = "";
+
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    let u = JSON.parse(localStorage.getItem(key));
+
+    if (u && u.roll) {
+      board.innerHTML += `<p>${u.roll} : ${u.points}</p>`;
+    }
+  }
+}
+</script>
+
+</body>
+</html>
