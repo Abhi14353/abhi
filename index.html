@@ -3,38 +3,239 @@
 <head>
 <title>Coding Club AI</title>
 
+<!-- IMPORTANT FOR MOBILE -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{
+  box-sizing:border-box;
+}
+
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background: #eef2ff;
   text-align: center;
+  margin: 0;
+  padding: 0;
 }
+
+/* Container */
 .container {
   background: white;
-  max-width: 350px;
-  width: 95%;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 10px;
+  width: 92%;
+  max-width: 380px;
+  margin: 15px auto;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-input, button, textarea {
-  width: 90%;
-  padding: 10px;
-  margin: 5px;
+
+/* Inputs & Buttons */
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  font-size: 16px;
+  border-radius: 8px;
 }
+
+/* Buttons */
 button {
   background: #4f46e5;
   color: white;
   border: none;
   cursor: pointer;
 }
+
+/* Hide elements */
 .hidden {
   display: none;
 }
+
+/* Headings */
 h2 {
   color: #4f46e5;
+  margin-bottom: 10px;
+}
+
+/* Leaderboard & Admin cards */
+.card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+/* Small phones */
+@media (max-width: 360px) {
+  h2 { font-size: 18px; }
+  button { font-size: 14px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="login">
+  <h2>Login</h2>
+  <input id="lroll" placeholder="Roll Number">
+  <input id="lpass" type="password" placeholder="Password">
+  <button onclick="loginUser()">Login</button>
+  <p onclick="showRegisterPage()" style="color:blue;cursor:pointer;">
+    New User? Register
+  </p>
+</div>
+
+<!-- REGISTER -->
+<div class="container hidden" id="registerPage">
+  <h2>Register</h2>
+  <input id="rroll" placeholder="Roll Number">
+  <input id="rname" placeholder="Name">
+  <input id="rpass" type="password" placeholder="Password">
+  <button onclick="registerUser()">Register</button>
+  <p onclick="showLoginPage()" style="color:blue;cursor:pointer;">
+    Back to Login
+  </p>
+</div>
+
+<!-- HOME -->
+<div class="container hidden" id="home">
+  <h2>Welcome <span id="uname"></span></h2>
+  <button onclick="showCoding()">💻 Coding</button>
+  <button onclick="showQuiz()">🧠 Quiz</button>
+  <button onclick="showAI()">🤖 AI Learning</button>
+  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
+  <button onclick="logout()">🚪 Logout</button>
+</div>
+
+<!-- CODING -->
+<div class="container hidden" id="coding">
+  <h2>💻 Coding</h2>
+  <p>Problem: Print Hello World</p>
+  <textarea rows="4">// write code here</textarea>
+  <button onclick="addPoints()">Submit</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- QUIZ -->
+<div class="container hidden" id="quiz">
+  <h2>🧠 Quiz</h2>
+  <p>What does AI stand for?</p>
+  <button onclick="correct()">Artificial Intelligence</button>
+  <button>Automatic Input</button>
+  <button>Advanced Internet</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- AI -->
+<div class="container hidden" id="ai">
+  <h2>🤖 AI Learning</h2>
+  <p>AI enables machines to think like humans.</p>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="container hidden" id="leaderboard">
+  <h2>🏆 Leaderboard</h2>
+  <div id="board"></div>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<script>
+let currentUser = "";
+
+/* Page Navigation */
+function showRegisterPage(){
+  login.classList.add("hidden");
+  registerPage.classList.remove("hidden");
+}
+function showLoginPage(){
+  registerPage.classList.add("hidden");
+  login.classList.remove("hidden");
+}
+
+/* Register */
+function registerUser(){
+  let roll = rroll.value;
+  let name = rname.value;
+  let pass = rpass.value;
+
+  if(!roll || !name || !pass){
+    alert("Fill all fields");
+    return;
+  }
+
+  let user = { roll, name, pass, points:0 };
+  localStorage.setItem(roll, JSON.stringify(user));
+  alert("Registered Successfully");
+  showLoginPage();
+}
+
+/* Login */
+function loginUser(){
+  let u = JSON.parse(localStorage.getItem(lroll.value));
+  if(u && u.pass === lpass.value){
+    currentUser = u.roll;
+    uname.innerText = u.name;
+    login.classList.add("hidden");
+    home.classList.remove("hidden");
+  } else {
+    alert("Invalid Login");
+  }
+}
+
+/* Logout */
+function logout(){
+  home.classList.add("hidden");
+  login.classList.remove("hidden");
+}
+
+/* Section Navigation */
+function showCoding(){ home.classList.add("hidden"); coding.classList.remove("hidden"); }
+function showQuiz(){ home.classList.add("hidden"); quiz.classList.remove("hidden"); }
+function showAI(){ home.classList.add("hidden"); ai.classList.remove("hidden"); }
+function showLeaderboard(){
+  home.classList.add("hidden");
+  leaderboard.classList.remove("hidden");
+  loadBoard();
+}
+function backHome(){
+  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+  home.classList.remove("hidden");
+}
+
+/* Points */
+function addPoints(){
+  let u = JSON.parse(localStorage.getItem(currentUser));
+  u.points += 10;
+  localStorage.setItem(currentUser, JSON.stringify(u));
+  alert("+10 Points Added");
+}
+function correct(){
+  addPoints();
+  alert("Correct Answer!");
+}
+
+/* Leaderboard */
+function loadBoard(){
+  board.innerHTML = "";
+  for(let i=0;i<localStorage.length;i++){
+    let u = JSON.parse(localStorage.getItem(localStorage.key(i)));
+    if(u && u.roll){
+      board.innerHTML += `
+        <div class="card">
+          <b>${u.roll}</b><br>
+          Points: ${u.points}
+        </div>`;
+    }
+  }
+}
+</script>
+
+</body>
+</html>  color: #4f46e5;
 }
 .admin-card{
   border:1px solid #ccc;
