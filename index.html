@@ -2,7 +2,9 @@
 <html>
 <head>
 <title>Coding Club AI</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
   font-family: Arial;
@@ -11,8 +13,9 @@ body {
 }
 .container {
   background: white;
-  width: 350px;
-  margin: 30px auto;
+  max-width: 350px;
+  width: 95%;
+  margin: 20px auto;
   padding: 20px;
   border-radius: 10px;
 }
@@ -33,8 +36,195 @@ button {
 h2 {
   color: #4f46e5;
 }
+.admin-card{
+  border:1px solid #ccc;
+  padding:10px;
+  margin:5px;
+  border-radius:6px;
+}
 </style>
 </head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="login">
+  <h2>Login</h2>
+  <input id="lroll" placeholder="Roll Number">
+  <input id="lpass" type="password" placeholder="Password">
+  <button onclick="loginUser()">Login</button>
+  <p onclick="showRegisterPage()" style="cursor:pointer;color:blue;">New User? Register</p>
+  <p onclick="showAdminLogin()" style="cursor:pointer;color:red;">Admin Login</p>
+</div>
+
+<!-- REGISTER -->
+<div class="container hidden" id="registerPage">
+  <h2>Register</h2>
+  <input id="rroll" placeholder="Roll Number">
+  <input id="rname" placeholder="Name">
+  <input id="rpass" type="password" placeholder="Password">
+  <button onclick="registerUser()">Register</button>
+  <p onclick="showLoginPage()" style="cursor:pointer;color:blue;">Back to Login</p>
+</div>
+
+<!-- HOME -->
+<div class="container hidden" id="home">
+  <h2>Welcome <span id="uname"></span></h2>
+  <button onclick="showCoding()">💻 Coding</button>
+  <button onclick="showQuiz()">🧠 Quiz</button>
+  <button onclick="showAI()">🤖 AI Learning</button>
+  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
+  <button onclick="logout()">🚪 Logout</button>
+</div>
+
+<!-- CODING -->
+<div class="container hidden" id="coding">
+  <h2>💻 Coding</h2>
+  <p>Problem: Print Hello World</p>
+  <textarea rows="4">// write your code here</textarea>
+  <button onclick="addPoints()">Submit</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- QUIZ -->
+<div class="container hidden" id="quiz">
+  <h2>🧠 Quiz</h2>
+  <p>What does AI stand for?</p>
+  <button onclick="correct()">Artificial Intelligence</button>
+  <button>Automatic Input</button>
+  <button>Advanced Internet</button>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- AI -->
+<div class="container hidden" id="ai">
+  <h2>🤖 AI Learning</h2>
+  <p>AI enables machines to think like humans.</p>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="container hidden" id="leaderboard">
+  <h2>🏆 Leaderboard</h2>
+  <div id="board"></div>
+  <button onclick="backHome()">Back</button>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="container hidden" id="adminLogin">
+  <h2>🔐 Admin Login</h2>
+  <input id="adminUser" placeholder="Admin Username">
+  <input id="adminPass" type="password" placeholder="Admin Password">
+  <button onclick="adminLogin()">Login</button>
+  <button onclick="showLoginPage()">Back</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="container hidden" id="adminPanel">
+  <h2>👑 Admin Panel</h2>
+  <div id="adminUserList"></div>
+  <button onclick="adminLogout()">Logout</button>
+</div>
+
+<script>
+let currentUser = "";
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "1234";
+
+function showRegisterPage(){
+  hideAll();
+  document.getElementById("registerPage").classList.remove("hidden");
+}
+function showLoginPage(){
+  hideAll();
+  document.getElementById("login").classList.remove("hidden");
+}
+function showAdminLogin(){
+  hideAll();
+  document.getElementById("adminLogin").classList.remove("hidden");
+}
+function hideAll(){
+  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+}
+
+function registerUser(){
+  let roll=rroll.value, name=rname.value, pass=rpass.value;
+  if(!roll||!name||!pass){ alert("Fill all fields"); return;}
+  localStorage.setItem(roll,JSON.stringify({roll,name,pass,points:0}));
+  alert("Registered Successfully");
+  showLoginPage();
+}
+
+function loginUser(){
+  let u=JSON.parse(localStorage.getItem(lroll.value));
+  if(u && u.pass===lpass.value){
+    currentUser=u.roll;
+    uname.innerText=u.name;
+    hideAll();
+    home.classList.remove("hidden");
+  } else alert("Invalid Login");
+}
+
+function logout(){ showLoginPage(); }
+
+function showCoding(){ hideAll(); coding.classList.remove("hidden"); }
+function showQuiz(){ hideAll(); quiz.classList.remove("hidden"); }
+function showAI(){ hideAll(); ai.classList.remove("hidden"); }
+function showLeaderboard(){ hideAll(); leaderboard.classList.remove("hidden"); loadBoard(); }
+function backHome(){ hideAll(); home.classList.remove("hidden"); }
+
+function addPoints(){
+  let u=JSON.parse(localStorage.getItem(currentUser));
+  u.points+=10;
+  localStorage.setItem(currentUser,JSON.stringify(u));
+  alert("+10 Points Added");
+}
+function correct(){ addPoints(); alert("Correct Answer"); }
+
+function loadBoard(){
+  board.innerHTML="";
+  for(let i=0;i<localStorage.length;i++){
+    let u=JSON.parse(localStorage.getItem(localStorage.key(i)));
+    if(u && u.roll) board.innerHTML+=`<p>${u.roll} : ${u.points}</p>`;
+  }
+}
+
+/* ADMIN */
+function adminLogin(){
+  if(adminUser.value===ADMIN_USERNAME && adminPass.value===ADMIN_PASSWORD){
+    hideAll();
+    adminPanel.classList.remove("hidden");
+    loadAdminUsers();
+  } else alert("Invalid Admin Login");
+}
+
+function loadAdminUsers(){
+  adminUserList.innerHTML="";
+  for(let i=0;i<localStorage.length;i++){
+    let key=localStorage.key(i);
+    let u=JSON.parse(localStorage.getItem(key));
+    if(u && u.roll){
+      adminUserList.innerHTML+=`
+      <div class="admin-card">
+        <b>Roll:</b> ${u.roll}<br>
+        <b>Name:</b> ${u.name}<br>
+        <b>Points:</b> ${u.points}<br>
+        <button onclick="deleteUser('${key}')">Delete</button>
+      </div>`;
+    }
+  }
+}
+function deleteUser(key){
+  if(confirm("Delete this user?")){
+    localStorage.removeItem(key);
+    loadAdminUsers();
+  }
+}
+function adminLogout(){ showLoginPage(); }
+</script>
+
+</body>
+</html></head>
 
 <body>
 
