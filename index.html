@@ -1,44 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Coding Club AI</title>
-
-  <!-- Mobile support -->
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding Club AI – Login</title>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2ff;
       margin: 0;
-      padding: 0;
-      text-align: center;
+      min-height: 100vh;
+      background: #eef1f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .container {
-      background: white;
-      width: 92%;
-      max-width: 380px;
-      margin: 20px auto;
-      padding: 18px;
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: #ffffff;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    input, textarea, button {
+    h2 {
+      text-align: center;
+      color: #4f46e5;
+      margin-bottom: 20px;
+    }
+
+    input {
       width: 100%;
       padding: 12px;
-      margin: 6px 0;
-      font-size: 16px;
+      margin-bottom: 12px;
       border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
 
     button {
+      width: 100%;
+      padding: 12px;
       background: #4f46e5;
       color: white;
       border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3730a3;
+    }
+
+    .link {
+      text-align: center;
+      margin-top: 12px;
+      color: #4f46e5;
       cursor: pointer;
     }
 
@@ -46,951 +70,81 @@
       display: none;
     }
 
-    h2 {
-      color: #4f46e5;
-    }
-
-    .card {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 6px 0;
-      border-radius: 10px;
-      background: #f9fafb;
-    }
-
-    p.link {
+    .admin {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
       cursor: pointer;
-      color: blue;
     }
   </style>
 </head>
 
 <body>
 
-<!-- ================= LOGIN ================= -->
-<div class="container" id="login">
-  <h2>Login</h2>
-  <input id="lroll" placeholder="Roll Number">
-  <input id="lpass" type="password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <p class="link" onclick="showRegisterPage()">New User? Register</p>
-</div>
+  <!-- LOGIN -->
+  <div class="card" id="loginBox">
+    <h2>Login</h2>
+    <input id="loginRoll" placeholder="Roll Number">
+    <input id="loginPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="link" onclick="showRegister()">New User? Register</div>
+    <div class="admin" onclick="adminLogin()">Admin Login</div>
+  </div>
 
-<!-- ================= REGISTER ================= -->
-<div class="container hidden" id="registerPage">
-  <h2>Register</h2>
-  <input id="rroll" placeholder="Roll Number">
-  <input id="rname" placeholder="Name">
-  <input id="rpass" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <p class="link" onclick="showLoginPage()">Back to Login</p>
-</div>
-
-<!-- ================= HOME ================= -->
-<div class="container hidden" id="home">
-  <h2>Welcome <span id="uname"></span></h2>
-  <button onclick="showCoding()">💻 Coding</button>
-  <button onclick="showQuiz()">🧠 Quiz</button>
-  <button onclick="showAI()">🤖 AI Learning</button>
-  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
-
-<!-- ================= CODING ================= -->
-<div class="container hidden" id="coding">
-  <h2>💻 Coding</h2>
-  <p>Problem: Print Hello World</p>
-  <textarea rows="4">// write code here</textarea>
-  <button onclick="addPoints()">Submit</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- ================= QUIZ ================= -->
-<div class="container hidden" id="quiz">
-  <h2>🧠 Quiz</h2>
-  <p>What does AI stand for?</p>
-  <button onclick="correct()">Artificial Intelligence</button>
-  <button>Automatic Input</button>
-  <button>Advanced Internet</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- ================= AI ================= -->
-<div class="container hidden" id="ai">
-  <h2>🤖 AI Learning</h2>
-  <p>AI enables machines to think like humans.</p>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- ================= LEADERBOARD ================= -->
-<div class="container hidden" id="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <div id="board"></div>
-  <button onclick="backHome()">Back</button>
-</div>
+  <!-- REGISTER -->
+  <div class="card hidden" id="registerBox">
+    <h2>Register</h2>
+    <input id="regRoll" placeholder="Roll Number">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <div class="link" onclick="showLogin()">Back to Login</div>
+  </div>
 
 <script>
-let currentUser = "";
-
-/* Hide all pages */
-function hideAllPages() {
-  document.querySelectorAll(".container")
-    .forEach(c => c.classList.add("hidden"));
-}
-
-/* Show login on load */
-hideAllPages();
-document.getElementById("login").classList.remove("hidden");
-
-/* Navigation */
-function showRegisterPage() {
-  hideAllPages();
-  registerPage.classList.remove("hidden");
-}
-
-function showLoginPage() {
-  hideAllPages();
-  login.classList.remove("hidden");
-}
-
-/* Register */
-function registerUser() {
-  let roll = rroll.value;
-  let name = rname.value;
-  let pass = rpass.value;
-
-  if (!roll || !name || !pass) {
-    alert("Please fill all fields");
-    return;
+  function showRegister() {
+    loginBox.classList.add("hidden");
+    registerBox.classList.remove("hidden");
   }
 
-  let user = { roll, name, pass, points: 0 };
-  localStorage.setItem(roll, JSON.stringify(user));
-  alert("Registered Successfully");
-  showLoginPage();
-}
-
-/* Login */
-function loginUser() {
-  let u = JSON.parse(localStorage.getItem(lroll.value));
-  if (u && u.pass === lpass.value) {
-    currentUser = u.roll;
-    uname.innerText = u.name;
-    hideAllPages();
-    home.classList.remove("hidden");
-  } else {
-    alert("Invalid Login");
+  function showLogin() {
+    registerBox.classList.add("hidden");
+    loginBox.classList.remove("hidden");
   }
-}
 
-/* Logout */
-function logout() {
-  hideAllPages();
-  login.classList.remove("hidden");
-}
+  function register() {
+    const roll = regRoll.value;
+    const pass = regPass.value;
 
-/* Sections */
-function showCoding() { hideAllPages(); coding.classList.remove("hidden"); }
-function showQuiz() { hideAllPages(); quiz.classList.remove("hidden"); }
-function showAI() { hideAllPages(); ai.classList.remove("hidden"); }
-function showLeaderboard() {
-  hideAllPages();
-  leaderboard.classList.remove("hidden");
-  loadBoard();
-}
-function backHome() { hideAllPages(); home.classList.remove("hidden"); }
+    if (!roll || !pass) {
+      alert("Fill all fields");
+      return;
+    }
 
-/* Points */
-function addPoints() {
-  let u = JSON.parse(localStorage.getItem(currentUser));
-  u.points += 10;
-  localStorage.setItem(currentUser, JSON.stringify(u));
-  alert("+10 Points Added");
-}
+    localStorage.setItem(roll, pass);
+    alert("Registration successful");
+    showLogin();
+  }
 
-function correct() {
-  addPoints();
-  alert("Correct Answer!");
-}
+  function login() {
+    const roll = loginRoll.value;
+    const pass = loginPass.value;
 
-/* Leaderboard */
-function loadBoard() {
-  board.innerHTML = "";
-  for (let i = 0; i < localStorage.length; i++) {
-    let u = JSON.parse(localStorage.getItem(localStorage.key(i)));
-    if (u && u.roll) {
-      board.innerHTML += `
-        <div class="card">
-          <b>${u.roll}</b><br>
-          Points: ${u.points}
-        </div>`;
+    if (localStorage.getItem(roll) === pass) {
+      alert("Login Successful");
+    } else {
+      alert("Invalid credentials");
     }
   }
-}
-</script>
 
-</body>
-</html>button{
-  background:#4f46e5;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-.hidden{ display:none; }
-
-h2{
-  color:#4f46e5;
-}
-
-.card{
-  background:#f9fafb;
-  border:1px solid #ddd;
-  padding:10px;
-  border-radius:10px;
-  margin:6px 0;
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div class="container" id="login">
-  <h2>Login</h2>
-  <input id="lroll" placeholder="Roll Number">
-  <input id="lpass" type="password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <p style="color:blue;cursor:pointer" onclick="showRegisterPage()">New User? Register</p>
-</div>
-
-<!-- REGISTER -->
-<div class="container hidden" id="registerPage">
-  <h2>Register</h2>
-  <input id="rroll" placeholder="Roll Number">
-  <input id="rname" placeholder="Name">
-  <input id="rpass" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <p style="color:blue;cursor:pointer" onclick="showLoginPage()">Back to Login</p>
-</div>
-
-<!-- HOME -->
-<div class="container hidden" id="home">
-  <h2>Welcome <span id="uname"></span></h2>
-  <button onclick="showCoding()">💻 Coding</button>
-  <button onclick="showQuiz()">🧠 Quiz</button>
-  <button onclick="showAI()">🤖 AI Learning</button>
-  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
-
-<!-- CODING -->
-<div class="container hidden" id="coding">
-  <h2>💻 Coding</h2>
-  <p>Problem: Print Hello World</p>
-  <textarea rows="4">// write code here</textarea>
-  <button onclick="addPoints()">Submit</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- QUIZ -->
-<div class="container hidden" id="quiz">
-  <h2>🧠 Quiz</h2>
-  <p>What does AI stand for?</p>
-  <button onclick="correct()">Artificial Intelligence</button>
-  <button>Automatic Input</button>
-  <button>Advanced Internet</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- AI -->
-<div class="container hidden" id="ai">
-  <h2>🤖 AI Learning</h2>
-  <p>AI enables machines to think like humans.</p>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="container hidden" id="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <div id="board"></div>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<script>
-let currentUser = "";
-
-/* Hide all pages */
-function hideAllPages(){
-  document.querySelectorAll(".container")
-    .forEach(c => c.classList.add("hidden"));
-}
-
-/* Initial load */
-hideAllPages();
-document.getElementById("login").classList.remove("hidden");
-
-/* Navigation */
-function showRegisterPage(){
-  hideAllPages();
-  registerPage.classList.remove("hidden");
-}
-
-function showLoginPage(){
-  hideAllPages();
-  login.classList.remove("hidden");
-}
-
-/* Register */
-function registerUser(){
-  let roll = rroll.value;
-  let name = rname.value;
-  let pass = rpass.value;
-
-  if(!roll || !name || !pass){
-    alert("Please fill all fields");
-    return;
-  }
-
-  let user = { roll, name, pass, points:0 };
-  localStorage.setItem(roll, JSON.stringify(user));
-  alert("Registered Successfully");
-  showLoginPage();
-}
-
-/* Login */
-function loginUser(){
-  let u = JSON.parse(localStorage.getItem(lroll.value));
-  if(u && u.pass === lpass.value){
-    currentUser = u.roll;
-    uname.innerText = u.name;
-    hideAllPages();
-    home.classList.remove("hidden");
-  } else {
-    alert("Invalid Login");
-  }
-}
-
-/* Logout */
-function logout(){
-  hideAllPages();
-  login.classList.remove("hidden");
-}
-
-/* Sections */
-function showCoding(){ hideAllPages(); coding.classList.remove("hidden"); }
-function showQuiz(){ hideAllPages(); quiz.classList.remove("hidden"); }
-function showAI(){ hideAllPages(); ai.classList.remove("hidden"); }
-function showLeaderboard(){
-  hideAllPages();
-  leaderboard.classList.remove("hidden");
-  loadBoard();
-}
-
-function backHome(){
-  hideAllPages();
-  home.classList.remove("hidden");
-}
-
-/* Points */
-function addPoints(){
-  let u = JSON.parse(localStorage.getItem(currentUser));
-  u.points += 10;
-  localStorage.setItem(currentUser, JSON.stringify(u));
-  alert("+10 Points Added");
-}
-
-function correct(){
-  addPoints();
-  alert("Correct Answer!");
-}
-
-/* Leaderboard */
-function loadBoard(){
-  board.innerHTML = "";
-  for(let i=0;i<localStorage.length;i++){
-    let u = JSON.parse(localStorage.getItem(localStorage.key(i)));
-    if(u && u.roll){
-      board.innerHTML += `
-        <div class="card">
-          <b>${u.roll}</b><br>
-          Points: ${u.points}
-        </div>`;
+  function adminLogin() {
+    let list = "";
+    for (let i = 0; i < localStorage.length; i++) {
+      let key = localStorage.key(i);
+      list += key + "\n";
     }
+    alert("Registered Roll Numbers:\n" + list);
   }
-}
-</script>
-
-</body>
-</html>  margin: 6px 0;
-  font-size: 16px;
-  border-radius: 8px;
-}
-
-/* Buttons */
-button {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-/* Hide elements */
-.hidden {
-  display: none;
-}
-
-/* Headings */
-h2 {
-  color: #4f46e5;
-  margin-bottom: 10px;
-}
-
-/* Leaderboard & Admin cards */
-.card {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 6px 0;
-  border-radius: 10px;
-  background: #f9fafb;
-}
-
-/* Small phones */
-@media (max-width: 360px) {
-  h2 { font-size: 18px; }
-  button { font-size: 14px; }
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div class="container" id="login">
-  <h2>Login</h2>
-  <input id="lroll" placeholder="Roll Number">
-  <input id="lpass" type="password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <p onclick="showRegisterPage()" style="color:blue;cursor:pointer;">
-    New User? Register
-  </p>
-</div>
-
-<!-- REGISTER -->
-<div class="container hidden" id="registerPage">
-  <h2>Register</h2>
-  <input id="rroll" placeholder="Roll Number">
-  <input id="rname" placeholder="Name">
-  <input id="rpass" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <p onclick="showLoginPage()" style="color:blue;cursor:pointer;">
-    Back to Login
-  </p>
-</div>
-
-<!-- HOME -->
-<div class="container hidden" id="home">
-  <h2>Welcome <span id="uname"></span></h2>
-  <button onclick="showCoding()">💻 Coding</button>
-  <button onclick="showQuiz()">🧠 Quiz</button>
-  <button onclick="showAI()">🤖 AI Learning</button>
-  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
-
-<!-- CODING -->
-<div class="container hidden" id="coding">
-  <h2>💻 Coding</h2>
-  <p>Problem: Print Hello World</p>
-  <textarea rows="4">// write code here</textarea>
-  <button onclick="addPoints()">Submit</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- QUIZ -->
-<div class="container hidden" id="quiz">
-  <h2>🧠 Quiz</h2>
-  <p>What does AI stand for?</p>
-  <button onclick="correct()">Artificial Intelligence</button>
-  <button>Automatic Input</button>
-  <button>Advanced Internet</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- AI -->
-<div class="container hidden" id="ai">
-  <h2>🤖 AI Learning</h2>
-  <p>AI enables machines to think like humans.</p>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="container hidden" id="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <div id="board"></div>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<script>
-let currentUser = "";
-
-/* Page Navigation */
-function showRegisterPage(){
-  login.classList.add("hidden");
-  registerPage.classList.remove("hidden");
-}
-function showLoginPage(){
-  registerPage.classList.add("hidden");
-  login.classList.remove("hidden");
-}
-
-/* Register */
-function registerUser(){
-  let roll = rroll.value;
-  let name = rname.value;
-  let pass = rpass.value;
-
-  if(!roll || !name || !pass){
-    alert("Fill all fields");
-    return;
-  }
-
-  let user = { roll, name, pass, points:0 };
-  localStorage.setItem(roll, JSON.stringify(user));
-  alert("Registered Successfully");
-  showLoginPage();
-}
-
-/* Login */
-function loginUser(){
-  let u = JSON.parse(localStorage.getItem(lroll.value));
-  if(u && u.pass === lpass.value){
-    currentUser = u.roll;
-    uname.innerText = u.name;
-    login.classList.add("hidden");
-    home.classList.remove("hidden");
-  } else {
-    alert("Invalid Login");
-  }
-}
-
-/* Logout */
-function logout(){
-  home.classList.add("hidden");
-  login.classList.remove("hidden");
-}
-
-/* Section Navigation */
-function showCoding(){ home.classList.add("hidden"); coding.classList.remove("hidden"); }
-function showQuiz(){ home.classList.add("hidden"); quiz.classList.remove("hidden"); }
-function showAI(){ home.classList.add("hidden"); ai.classList.remove("hidden"); }
-function showLeaderboard(){
-  home.classList.add("hidden");
-  leaderboard.classList.remove("hidden");
-  loadBoard();
-}
-function backHome(){
-  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-  home.classList.remove("hidden");
-}
-
-/* Points */
-function addPoints(){
-  let u = JSON.parse(localStorage.getItem(currentUser));
-  u.points += 10;
-  localStorage.setItem(currentUser, JSON.stringify(u));
-  alert("+10 Points Added");
-}
-function correct(){
-  addPoints();
-  alert("Correct Answer!");
-}
-
-/* Leaderboard */
-function loadBoard(){
-  board.innerHTML = "";
-  for(let i=0;i<localStorage.length;i++){
-    let u = JSON.parse(localStorage.getItem(localStorage.key(i)));
-    if(u && u.roll){
-      board.innerHTML += `
-        <div class="card">
-          <b>${u.roll}</b><br>
-          Points: ${u.points}
-        </div>`;
-    }
-  }
-}
-</script>
-
-</body>
-</html>  color: #4f46e5;
-}
-.admin-card{
-  border:1px solid #ccc;
-  padding:10px;
-  margin:5px;
-  border-radius:6px;
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div class="container" id="login">
-  <h2>Login</h2>
-  <input id="lroll" placeholder="Roll Number">
-  <input id="lpass" type="password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <p onclick="showRegisterPage()" style="cursor:pointer;color:blue;">New User? Register</p>
-  <p onclick="showAdminLogin()" style="cursor:pointer;color:red;">Admin Login</p>
-</div>
-
-<!-- REGISTER -->
-<div class="container hidden" id="registerPage">
-  <h2>Register</h2>
-  <input id="rroll" placeholder="Roll Number">
-  <input id="rname" placeholder="Name">
-  <input id="rpass" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <p onclick="showLoginPage()" style="cursor:pointer;color:blue;">Back to Login</p>
-</div>
-
-<!-- HOME -->
-<div class="container hidden" id="home">
-  <h2>Welcome <span id="uname"></span></h2>
-  <button onclick="showCoding()">💻 Coding</button>
-  <button onclick="showQuiz()">🧠 Quiz</button>
-  <button onclick="showAI()">🤖 AI Learning</button>
-  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
-
-<!-- CODING -->
-<div class="container hidden" id="coding">
-  <h2>💻 Coding</h2>
-  <p>Problem: Print Hello World</p>
-  <textarea rows="4">// write your code here</textarea>
-  <button onclick="addPoints()">Submit</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- QUIZ -->
-<div class="container hidden" id="quiz">
-  <h2>🧠 Quiz</h2>
-  <p>What does AI stand for?</p>
-  <button onclick="correct()">Artificial Intelligence</button>
-  <button>Automatic Input</button>
-  <button>Advanced Internet</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- AI -->
-<div class="container hidden" id="ai">
-  <h2>🤖 AI Learning</h2>
-  <p>AI enables machines to think like humans.</p>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="container hidden" id="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <div id="board"></div>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- ADMIN LOGIN -->
-<div class="container hidden" id="adminLogin">
-  <h2>🔐 Admin Login</h2>
-  <input id="adminUser" placeholder="Admin Username">
-  <input id="adminPass" type="password" placeholder="Admin Password">
-  <button onclick="adminLogin()">Login</button>
-  <button onclick="showLoginPage()">Back</button>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="container hidden" id="adminPanel">
-  <h2>👑 Admin Panel</h2>
-  <div id="adminUserList"></div>
-  <button onclick="adminLogout()">Logout</button>
-</div>
-
-<script>
-let currentUser = "";
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "1234";
-
-function showRegisterPage(){
-  hideAll();
-  document.getElementById("registerPage").classList.remove("hidden");
-}
-function showLoginPage(){
-  hideAll();
-  document.getElementById("login").classList.remove("hidden");
-}
-function showAdminLogin(){
-  hideAll();
-  document.getElementById("adminLogin").classList.remove("hidden");
-}
-function hideAll(){
-  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-}
-
-function registerUser(){
-  let roll=rroll.value, name=rname.value, pass=rpass.value;
-  if(!roll||!name||!pass){ alert("Fill all fields"); return;}
-  localStorage.setItem(roll,JSON.stringify({roll,name,pass,points:0}));
-  alert("Registered Successfully");
-  showLoginPage();
-}
-
-function loginUser(){
-  let u=JSON.parse(localStorage.getItem(lroll.value));
-  if(u && u.pass===lpass.value){
-    currentUser=u.roll;
-    uname.innerText=u.name;
-    hideAll();
-    home.classList.remove("hidden");
-  } else alert("Invalid Login");
-}
-
-function logout(){ showLoginPage(); }
-
-function showCoding(){ hideAll(); coding.classList.remove("hidden"); }
-function showQuiz(){ hideAll(); quiz.classList.remove("hidden"); }
-function showAI(){ hideAll(); ai.classList.remove("hidden"); }
-function showLeaderboard(){ hideAll(); leaderboard.classList.remove("hidden"); loadBoard(); }
-function backHome(){ hideAll(); home.classList.remove("hidden"); }
-
-function addPoints(){
-  let u=JSON.parse(localStorage.getItem(currentUser));
-  u.points+=10;
-  localStorage.setItem(currentUser,JSON.stringify(u));
-  alert("+10 Points Added");
-}
-function correct(){ addPoints(); alert("Correct Answer"); }
-
-function loadBoard(){
-  board.innerHTML="";
-  for(let i=0;i<localStorage.length;i++){
-    let u=JSON.parse(localStorage.getItem(localStorage.key(i)));
-    if(u && u.roll) board.innerHTML+=`<p>${u.roll} : ${u.points}</p>`;
-  }
-}
-
-/* ADMIN */
-function adminLogin(){
-  if(adminUser.value===ADMIN_USERNAME && adminPass.value===ADMIN_PASSWORD){
-    hideAll();
-    adminPanel.classList.remove("hidden");
-    loadAdminUsers();
-  } else alert("Invalid Admin Login");
-}
-
-function loadAdminUsers(){
-  adminUserList.innerHTML="";
-  for(let i=0;i<localStorage.length;i++){
-    let key=localStorage.key(i);
-    let u=JSON.parse(localStorage.getItem(key));
-    if(u && u.roll){
-      adminUserList.innerHTML+=`
-      <div class="admin-card">
-        <b>Roll:</b> ${u.roll}<br>
-        <b>Name:</b> ${u.name}<br>
-        <b>Points:</b> ${u.points}<br>
-        <button onclick="deleteUser('${key}')">Delete</button>
-      </div>`;
-    }
-  }
-}
-function deleteUser(key){
-  if(confirm("Delete this user?")){
-    localStorage.removeItem(key);
-    loadAdminUsers();
-  }
-}
-function adminLogout(){ showLoginPage(); }
-</script>
-
-</body>
-</html></head>
-
-<body>
-
-<!-- LOGIN -->
-<div class="container" id="login">
-  <h2>Login</h2>
-  <input id="lroll" placeholder="Roll Number">
-  <input id="lpass" type="password" placeholder="Password">
-  <button onclick="loginUser()">Login</button>
-  <p onclick="showRegisterPage()" style="cursor:pointer;color:blue;">
-    New User? Register
-  </p>
-</div>
-
-<!-- REGISTER -->
-<div class="container hidden" id="registerPage">
-  <h2>Register</h2>
-  <input id="rroll" placeholder="Roll Number">
-  <input id="rname" placeholder="Name">
-  <input id="rpass" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <p onclick="showLoginPage()" style="cursor:pointer;color:blue;">
-    Back to Login
-  </p>
-</div>
-
-<!-- HOME -->
-<div class="container hidden" id="home">
-  <h2>Welcome <span id="uname"></span></h2>
-  <button onclick="showCoding()">💻 Coding</button>
-  <button onclick="showQuiz()">🧠 Quiz</button>
-  <button onclick="showAI()">🤖 AI Learning</button>
-  <button onclick="showLeaderboard()">🏆 Leaderboard</button>
-  <button onclick="logout()">🚪 Logout</button>
-</div>
-
-<!-- CODING -->
-<div class="container hidden" id="coding">
-  <h2>💻 Coding</h2>
-  <p>Problem: Print Hello World</p>
-  <textarea rows="4">// write your code here</textarea>
-  <button onclick="addPoints()">Submit</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- QUIZ -->
-<div class="container hidden" id="quiz">
-  <h2>🧠 Quiz</h2>
-  <p>What does AI stand for?</p>
-  <button onclick="correct()">Artificial Intelligence</button>
-  <button>Automatic Input</button>
-  <button>Advanced Internet</button>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- AI LEARNING -->
-<div class="container hidden" id="ai">
-  <h2>🤖 AI Learning</h2>
-  <p>AI enables machines to think like humans.</p>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="container hidden" id="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <div id="board"></div>
-  <button onclick="backHome()">Back</button>
-</div>
-
-<script>
-let currentUser = "";
-
-function showRegisterPage() {
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("registerPage").classList.remove("hidden");
-}
-
-function showLoginPage() {
-  document.getElementById("registerPage").classList.add("hidden");
-  document.getElementById("login").classList.remove("hidden");
-}
-
-function registerUser() {
-  let roll = document.getElementById("rroll").value;
-  let name = document.getElementById("rname").value;
-  let pass = document.getElementById("rpass").value;
-
-  if (roll === "" || name === "" || pass === "") {
-    alert("Please fill all fields");
-    return;
-  }
-
-  let user = {
-    roll: roll,
-    name: name,
-    pass: pass,
-    points: 0
-  };
-
-  localStorage.setItem(roll, JSON.stringify(user));
-  alert("Registered Successfully");
-  showLoginPage();
-}
-
-function loginUser() {
-  let roll = document.getElementById("lroll").value;
-  let pass = document.getElementById("lpass").value;
-
-  let u = JSON.parse(localStorage.getItem(roll));
-
-  if (u && u.pass === pass) {
-    currentUser = u.roll;
-    document.getElementById("uname").innerText = u.name;
-
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("home").classList.remove("hidden");
-  } else {
-    alert("Invalid Login");
-  }
-}
-
-function logout() {
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("login").classList.remove("hidden");
-}
-
-function showCoding() {
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("coding").classList.remove("hidden");
-}
-
-function showQuiz() {
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("quiz").classList.remove("hidden");
-}
-
-function showAI() {
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("ai").classList.remove("hidden");
-}
-
-function showLeaderboard() {
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("leaderboard").classList.remove("hidden");
-  loadBoard();
-}
-
-function backHome() {
-  document.querySelectorAll(".container").forEach(c => c.classList.add("hidden"));
-  document.getElementById("home").classList.remove("hidden");
-}
-
-function addPoints() {
-  let u = JSON.parse(localStorage.getItem(currentUser));
-  u.points += 10;
-  localStorage.setItem(currentUser, JSON.stringify(u));
-  alert("+10 Points Added");
-}
-
-function correct() {
-  addPoints();
-  alert("Correct Answer!");
-}
-
-function loadBoard() {
-  let board = document.getElementById("board");
-  board.innerHTML = "";
-
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    let u = JSON.parse(localStorage.getItem(key));
-
-    if (u && u.roll) {
-      board.innerHTML += `<p>${u.roll} : ${u.points}</p>`;
-    }
-  }
-}
 </script>
 
 </body>
